@@ -13,7 +13,7 @@ class MicropostsController < ApplicationController
     cache = ActiveSupport::Cache::RedisCacheStore.new
 
     id = params[:id]
-    content = cache.fetch("microposts:" + id) do
+    content = cache.fetch("microposts:" + id, expires_in: 1.minutes) do
       p "no cache && set cache"
       @micropost.content
     end
