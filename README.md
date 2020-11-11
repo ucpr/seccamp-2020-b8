@@ -38,3 +38,17 @@ seccamp-2020-b8_development=# SELECT * FROM users;
   2 | po   | po@po.com | 2020-11-07 07:17:00.587211 | 2020-11-07 07:17:00.587211
 (1 row)
 ```
+
+## 課題2
+どういうkeyの名前にするのが良いかわからなかったので
+  - https://future-architect.github.io/articles/20190821/
+を参考にして`microposts:${id}`のようなkeyでcontentをredisに保存させるようにした.  
+
+```ruby
+content = cache.fetch("microposts:" + id) do
+  @micropost.content
+end
+```
+
+また,ドキュメントを参照してcacheのexpirationを`1 minutes`として指定した.  
+- https://api.rubyonrails.org/classes/ActiveSupport/Cache/Store.html#method-i-fetch
