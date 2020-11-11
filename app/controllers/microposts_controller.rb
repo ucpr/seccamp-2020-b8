@@ -10,6 +10,16 @@ class MicropostsController < ApplicationController
   # GET /microposts/1
   # GET /microposts/1.json
   def show
+    cache = ActiveSupport::Cache::RedisCacheStore.new
+
+    id = params[:id]
+    content = cache.fetch("microposts:" + id) do
+      p "no cache && set cache"
+      @micropost.content
+    end
+
+    @micropost.content = content
+
   end
 
   # GET /microposts/new
