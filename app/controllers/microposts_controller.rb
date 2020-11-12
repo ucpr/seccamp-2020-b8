@@ -1,5 +1,6 @@
 class MicropostsController < ApplicationController
-  before_action :set_micropost, only: [:show, :edit, :update, :destroy]
+  before_action :cache_micropost, only: [:show]
+  before_action :set_micropost, only: [:edit, :update, :destroy]
 
   # GET /microposts
   # GET /microposts.json
@@ -10,15 +11,6 @@ class MicropostsController < ApplicationController
   # GET /microposts/1
   # GET /microposts/1.json
   def show
-    cache = ActiveSupport::Cache::RedisCacheStore.new
-
-    id = params[:id]
-    content = cache.fetch("microposts:" + id, expires_in: 1.minutes) do
-      @micropost.content
-    end
-
-    @micropost.content = content
-
   end
 
   # GET /microposts/new
@@ -79,5 +71,13 @@ class MicropostsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def micropost_params
       params.require(:micropost).permit(:content, :user_id)
+    end
+
+    def cache_micropost
+      cache = ActiveSupport::Cache::RedisCacheStore.new
+
+      @micropost = cache.fetch("microposts:" + params[:id], expires_in: 1.minutes) do
+        Micropost.find(params[:id])
+      end
     end
 end
