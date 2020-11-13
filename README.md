@@ -41,7 +41,7 @@ seccamp-2020-b8_development=# SELECT * FROM users;
 
 ## 課題2
 どういうkeyの名前にするのが良いかわからなかったので
-  - https://future-architect.github.io/articles/20190821/
+  - https://future-architect.github.io/articles/20190821/  
 を参考にして`microposts:${id}`のようなkeyでcontentをredisに保存させるようにした.  
 
 ```ruby
@@ -51,4 +51,20 @@ end
 ```
 
 また,ドキュメントを参照してcacheのexpirationを`1 minutes`として指定した.  
-- https://api.rubyonrails.org/classes/ActiveSupport/Cache/Store.html#method-i-fetch
+- https://api.rubyonrails.org/classes/ActiveSupport/Cache/Store.html#method-i-fetch  
+
+余裕があったので,cacheから取得するときはDBアクセスしないようにした.
+下記のようなメソッドを実装し,
+```ruby
+def cache_micropost
+  cache = ActiveSupport::Cache::RedisCacheStore.new
+  @micropost = cache.fetch("microposts:" + params[:id], expires_in: 1.minutes) do
+    Micropost.find(params[:id])
+  end
+end
+```
+`before_action`として`show`の時に実行させるようにした.
+```
+before_action :cache_micropost, only: [:show]
+...
+
