@@ -6,8 +6,8 @@ WORKDIR /application
 
 COPY . .
 
-RUN bundle install
+RUN gem install bundler && bundle install
 
 EXPOSE 3000
 
-CMD ["rails", "server"]
+CMD ["bundle", "exec", "rails", "server"]
