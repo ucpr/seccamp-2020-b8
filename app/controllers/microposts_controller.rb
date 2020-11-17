@@ -74,7 +74,7 @@ class MicropostsController < ApplicationController
     end
 
     def cache_micropost
-      cache = ActiveSupport::Cache::RedisCacheStore.new
+      cache = ActiveSupport::Cache::RedisCacheStore.new(url: "redis:6379")
 
       @micropost = cache.fetch("microposts:" + params[:id], expires_in: 1.minutes) do
         Micropost.find(params[:id])

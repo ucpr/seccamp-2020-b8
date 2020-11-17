@@ -1,6 +1,14 @@
 version: '3.3'
 
 services:
+  application:
+    build: .
+    ports:
+      - 3000:3000
+    links:
+      - database
+      - redis
+
   database:
     image: postgres:9.6
     restart: always
